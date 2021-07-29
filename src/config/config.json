@@ -1,0 +1,47 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "storage" : "database_dev.sqlite",
+    "host": "127.0.0.1",
+    "dialect": "sqlite",
+    "app": {
+      "port": 3001,
+      "defaultSizeOfPage": 33,
+      "saltRounds": 10,
+      "jwtSecret": "rg-instapic-dev", 
+      "jwtExpiresIn": 600,
+      "imagePath": "./images"
+    }
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test.sqlite",
+    "host": "127.0.0.1",
+    "dialect": "sqlite",
+    "app": {
+      "port": 3001,
+      "defaultSizeOfPage": 33,
+      "saltRounds": 10,
+      "jwtSecret": "rg-instapic-test",
+      "jwtExpiresIn": 86400,
+      "imagePath": "./images"
+    }
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production.sqlite",
+    "host": "127.0.0.1",
+    "dialect": "sqlite",
+    "app": {
+      "port": 3001,
+      "defaultSizeOfPage": 33,
+      "saltRounds": 10,
+      "jwtSecret": "rg-instapic",
+      "jwtExpiresIn": 86400,
+      "imagePath": "./images"
+    }
+  }
+}
