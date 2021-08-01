@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d ./bin && cp -R ./src/config ./bin/config",
+    "build": "babel src -d ./bin && cp -R ./src/config/ ./bin/config/",
     "start": "npm run build && cross-env NODE_ENV=development node ./bin",
     "restart": "rimraf bin && npm run start",
     "dev": "cross-env NODE_ENV=development nodemon --exec npm run restart",    
