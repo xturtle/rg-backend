@@ -5,7 +5,7 @@
 #for 80 port with root permissions
 sudo apt install authbind
 sudo touch /etc/authbind/byport/80
-sudo chown %user% /etc/authbind/byport/80
+sudo chown "$USER" /etc/authbind/byport/80
 sudo chmod 755 /etc/authbind/byport/80
 #install package
 npm install
