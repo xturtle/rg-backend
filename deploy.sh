@@ -12,20 +12,22 @@ sudo chmod 755 /etc/authbind/byport/80
 npm install
 sudo npm i -g pm2 cross-env
 cd src/
-if [ ! -f ../database.sqlite ]; then
+if [ ! -f src/database.sqlite ]; then
     cross-env NODE_ENV=production npx sequelize-cli db:migrate
 fi
 cd ../
-rm -rf ./build
+rm -rf ./bin
 npm run build
 
 #frontend
-cd ../fg-frontend
+cd ../rg-frontend
 npm i
 npm run build
+cd ../rg-backend
 cp -R ../rg-frontend/build ./bin
 mv ./bin/build ./bin/web
-mkdir ./bin/image
+mkdir ./bin/images
 
 # run
+mv src/database.sqlite ./
 cross-env NODE_ENV=production authbind --deep pm2 start ./bin

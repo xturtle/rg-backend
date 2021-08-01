@@ -7,7 +7,7 @@
     "build": "babel src -d ./bin && cp -R ./src/config/ ./bin/config/",
     "start": "npm run build && cross-env NODE_ENV=development node ./bin",
     "restart": "rimraf bin && npm run start",
-    "dev": "cross-env NODE_ENV=development nodemon --exec npm run restart",    
+    "dev": "cross-env NODE_ENV=development nodemon --exec npm run restart",
     "test": "npm run migrate:reset && cross-env NODE_ENV=test jest --testTimeout=100000 --forceExit --maxWorkers=1",
     "migrate": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",
     "migrate:reset": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all && npm run migrate"
@@ -22,6 +22,7 @@
     "log4js": "^6.3.0",
     "md5": "^2.3.0",
     "npm-run-all": "^4.1.5",
+    "path-to-regexp": "^6.2.0",
     "sequelize": "^6.6.5",
     "sqlite3": "^5.0.2"
   },
@@ -30,7 +31,9 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
-    "modulePathIgnorePatterns": ["bin/test/"]
+    "modulePathIgnorePatterns": [
+      "bin/test/"
+    ]
   },
   "babel": {
     "presets": [

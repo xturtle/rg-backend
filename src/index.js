@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import fileUpload from 'express-fileupload';
 import md5 from 'md5';
 import path from 'path';
+//import { pathToRegexp } from 'path-to-regexp';
 
 //database models
 import {User, Post} from './models';
@@ -27,7 +28,7 @@ app.use(express.json());                                  // json parser
 app.use(express.urlencoded({ extended: true }));          // urlencoded form parser
 app.use(fileUpload());                                    // file upload middleware
 app.use('/', 
-  express.static(path.join(__dirname+'./web')));          // static content (frontend)
+  express.static(path.join(__dirname+'/web')));           // static content (frontend)
 app.use('/images',
   express.static(path.join(__dirname+config.app.imagePath))); // static image
 app.use(expressJWT({                                      // jwt init
@@ -35,7 +36,8 @@ app.use(expressJWT({                                      // jwt init
   algorithms: ['HS256']                                   // algorithm used
 }).unless({
   path: [                                                 // specified routes which need not to authenticate first.
-    "/", "/login/", "/submit/", "/post/*", "/profile/*",
+    //#"/", pathToRegexp("/:login*"), pathToRegexp("/:post*"), pathToRegexp("/:profile*"), 
+    "/", "/login", "/submit", "/post", "/profile", /^\/post\/.*/, /^\/profile\/.*/,
     "/api/signon", "/api/signup" 
   ]
 }));
@@ -132,10 +134,10 @@ app.post("/api/signon", async (req, res) => {
     },
     raw: true
   });
-  var success = false;
 
   if (user !== null) {
-    if (bcrypt.compareSync(req.body.password, user.password)) {
+    let success = await bcrypt.compare(req.body.password, user.password)
+    if (success) {
       logger.info(`"${req.body.username}" login successful, generating token...`);
       //generate JWT token
       const token = 'Bearer ' + jwt.sign({
@@ -144,14 +146,14 @@ app.post("/api/signon", async (req, res) => {
         }, config.app.jwtSecret, { expiresIn: config.app.jwtExpiresIn }
       )
       logger.info(`token generated, will expired after ${config.app.jwtExpiresIn}.`);
-      success = true
-      res.send(instaPic.result(token));      
+      res.send(instaPic.result(token));
+      return;
     }
   }
-  if (!success) {
-    logger.info(`"${req.body.username}" login failed.`);
-    res.send(instaPic.result(null, "100"));
-  }  
+  
+  logger.info(`"${req.body.username}" login failed.`);
+  res.send(instaPic.result(null, "100"));
+  return;
 });
 
 //sign up
@@ -166,7 +168,11 @@ app.post("/api/signup", async (req, res) => {
   }
 
   // begin transaction
+  logger.info(`salt round = ${config.app.saltRounds}`);
   logger.info(`begin transaction.`);
+  var salt = await bcrypt.genSalt(parseInt(config.app.saltRounds));
+  var pwHash = await bcrypt.hash(req.body.password, salt);
+  logger.info(`generated hash=${pwHash}`);
   let transaction = await sequelize.transaction();
   try {
     const [result, created] = await User.findOrCreate({
@@ -175,7 +181,7 @@ app.post("/api/signup", async (req, res) => {
       },
       defaults: {
         username: req.body.username,
-        password: bcrypt.hashSync(req.body.password, config.app.saltRounds)
+        password: pwHash //bcrypt.hashSync(req.body.password, config.app.saltRounds)
       },
       transaction: transaction
     });
