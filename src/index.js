@@ -14,9 +14,10 @@ import {User, Post} from './models';
 //config
 import configSet from './config/config.json'
 import instaPic from './instapic';
+import { run } from 'jest';
 
-const config = configSet[process.env.NODE_ENV];
-const logger = log4js.getLogger();
+const config = configSet[process.env.NODE_ENV], logger = log4js.getLogger();
+var server = null;
 logger.level = 'all';
 
 var app = express(), sequelize = null;
@@ -35,26 +36,9 @@ app.use(expressJWT({                                      // jwt init
     "/", "/api/signon", "/api/signup" 
   ]
 }));
-app.use(function (err, req, res, next) {                  //capturing 401 error
+app.use(function (err, req, res, next) {                  //capturing 401 error  
   if (err.name === 'UnauthorizedError') res.send(instaPic.result(null, "101"))
 });
-
-// server initialization
-var init = () => {
-  logger.info('InstaPic Server starting...');
-  logger.info(`Loading configuration set "${process.env.NODE_ENV}".`)
-  sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: config.storage,
-    logging: logger.debug.bind(logger)
-  });
-  logger.info(`Using SQLite database from ${config.storage}.`);
-
-  
-  app.listen(config.app.port, () => {
-    logger.info(`InstaPic Server listening on port ${config.app.port}.`);
-  });
-}
 
 app.options('*') // include before other routes
 //get web service status
@@ -156,7 +140,7 @@ app.post("/api/signon", async (req, res) => {
         username: user.username
         }, config.app.jwtSecret, { expiresIn: config.app.jwtExpiresIn }
       )
-      logger.info(`token generated, will expired after ${config.app.jwtExpiresIn} sec.`);
+      logger.info(`token generated, will expired after ${config.app.jwtExpiresIn}.`);
       success = true
       res.send(instaPic.result(token));      
     }
@@ -209,4 +193,22 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
+function init() {
+  logger.info('InstaPic Server starting...');
+  logger.info(`Loading configuration set "${process.env.NODE_ENV}".`)
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: config.storage,
+    logging: process.env.NODE_ENV !== 'test'?logger.debug.bind(logger): null
+  });
+  logger.info(`Using SQLite database from ${config.storage}.`);
+
+  if (process.env.NODE_ENV !== 'test') {
+    return app.listen(config.app.port, () => {    
+      logger.info(`InstaPic Server listening on port ${config.app.port}.`);
+    });
+  }
+}
+
+export default app;
 init();

@@ -7,8 +7,10 @@
     "build": "babel src -d ./bin",
     "start": "npm run build && cp -R ./src/config ./bin/config && cross-env NODE_ENV=development node ./bin",
     "restart": "rimraf bin && npm run start",
-    "dev": "cross-env NODE_ENV=development nodemon --exec npm run restart",
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000"
+    "dev": "cross-env NODE_ENV=development nodemon --exec npm run restart",    
+    "test": "npm run migrate:reset && cross-env NODE_ENV=test jest --testTimeout=100000 --forceExit --maxWorkers=1",
+    "migrate": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",
+    "migrate:reset": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all && npm run migrate"
   },
   "author": "William Tsai",
   "license": "ISC",
@@ -27,7 +29,8 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "modulePathIgnorePatterns": ["bin/test/"]
   },
   "babel": {
     "presets": [
@@ -35,6 +38,9 @@
     ],
     "plugins": [
       "@babel/plugin-transform-runtime"
+    ],
+    "ignore": [
+      "test"
     ]
   },
   "devDependencies": {
