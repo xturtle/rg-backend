@@ -15,7 +15,7 @@ import {User, Post} from './models';
 import configSet from './config/config.json'
 import instaPic from './instapic';
 
-const config = configSet["development"];
+const config = configSet[process.env.NODE_ENV];
 const logger = log4js.getLogger();
 logger.level = 'all';
 
@@ -42,6 +42,7 @@ app.use(function (err, req, res, next) {                  //capturing 401 error
 // server initialization
 var init = () => {
   logger.info('InstaPic Server starting...');
+  logger.info(`Loading configuration set "${process.env.NODE_ENV}".`)
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: config.storage,
@@ -114,7 +115,7 @@ app.post("/api/post", async (req, res)=>{
   }  
 
   image = req.files.image;
-  newFileName = `${md5(image.data)}.${image.name.split(".")[1]}`
+  newFileName = `${md5(image.data)}.${image.name.split(".").slice(-1)[0]}`
   newPath = `${config.app.imagePath}/${newFileName}`;
 
   // Use the mv() method to place the file somewhere on your server
