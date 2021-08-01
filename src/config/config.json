@@ -33,7 +33,7 @@
     "storage": "../database.sqlite",
     "dialect": "sqlite",
     "app": {
-      "port": 3001,
+      "port": 80,
       "defaultSizeOfPage": 33,
       "saltRounds": "1d",
       "jwtSecret": "rg-instapic",
