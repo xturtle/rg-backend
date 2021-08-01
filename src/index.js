@@ -7,6 +7,7 @@ import expressJWT from 'express-jwt';
 import jwt from 'jsonwebtoken';
 import fileUpload from 'express-fileupload';
 import md5 from 'md5';
+import path from 'path';
 
 //database models
 import {User, Post} from './models';
@@ -14,7 +15,6 @@ import {User, Post} from './models';
 //config
 import configSet from './config/config.json'
 import instaPic from './instapic';
-import { run } from 'jest';
 
 const config = configSet[process.env.NODE_ENV], logger = log4js.getLogger();
 var server = null;
@@ -26,8 +26,10 @@ var app = express(), sequelize = null;
 app.use(express.json());                                  // json parser
 app.use(express.urlencoded({ extended: true }));          // urlencoded form parser
 app.use(fileUpload());                                    // file upload middleware
-app.use('/', express.static('./web'));                    // static content (frontend)
-app.use('/images', express.static(config.app.imagePath)); // static image
+app.use('/', 
+  express.static(path.join(__dirname+'./web')));          // static content (frontend)
+app.use('/images',
+  express.static(path.join(__dirname+config.app.imagePath))); // static image
 app.use(expressJWT({                                      // jwt init
   secret: config.app.jwtSecret,                           // secret, read from config
   algorithms: ['HS256']                                   // algorithm used
@@ -101,7 +103,7 @@ app.post("/api/post", async (req, res)=>{
 
   image = req.files.image;
   newFileName = `${md5(image.data)}.${image.name.split(".").slice(-1)[0]}`
-  newPath = `${config.app.imagePath}/${newFileName}`;
+  newPath = path.join(__dirname+`${config.app.imagePath}/${newFileName}`);
 
   // Use the mv() method to place the file somewhere on your server
   await image.mv(newPath);

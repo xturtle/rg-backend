@@ -8,7 +8,7 @@ sudo touch /etc/authbind/byport/80
 sudo chown "$USER" /etc/authbind/byport/80
 sudo chmod 755 /etc/authbind/byport/80
 
-#install package
+# install package of backend
 npm install
 sudo npm i -g pm2 cross-env
 cd src/
@@ -18,6 +18,14 @@ fi
 cd ../
 rm -rf ./build
 npm run build
+
+#frontend
+cd ../fg-frontend
+npm i
+npm run build
 cp -R ../rg-frontend/build ./bin
-mv ./bin/nuild ./bin/web
+mv ./bin/build ./bin/web
+mkdir ./bin/image
+
+# run
 cross-env NODE_ENV=production authbind --deep pm2 start ./bin
