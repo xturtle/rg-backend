@@ -33,7 +33,8 @@ app.use(expressJWT({                                      // jwt init
   algorithms: ['HS256']                                   // algorithm used
 }).unless({
   path: [                                                 // specified routes which need not to authenticate first.
-    "/", "/api/signon", "/api/signup" 
+    "/", "/login/", "/submit/", "/post/*", "/profile/*",
+    "/api/signon", "/api/signup" 
   ]
 }));
 app.use(function (err, req, res, next) {                  //capturing 401 error  
@@ -191,6 +192,11 @@ app.post("/api/signup", async (req, res) => {
     logger.error(`transaction failed: ${err.message}`);
     if (transaction) await transaction.rollback();
   }
+});
+
+// another static content
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/web/index.html'));
 });
 
 function init() {
