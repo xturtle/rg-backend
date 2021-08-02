@@ -194,6 +194,7 @@ result:
   "message": "No problem",
   "payload": postID		//int, the postID of submitted post.
 }
+```
 
 possible errors:
 code 200: No image uploaded. 
