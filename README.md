@@ -2,6 +2,11 @@
 
 if your OS is windows please read this link to solve soft link problem: http://stackoverflow.com/a/16754068
 
+Tech stack:
+React.js + React Router
+node.js + express.js + sequelize + sqlite
+under node.js v14.17.3 (the newest LTS version)
+
 ## deployment usage:
 
 ```SHELL==
@@ -10,7 +15,7 @@ $ git clone https://github.com/xturtle/rg-frontend.git
 $ cd rg-backend
 $ sudo ./deploy.sh
 
-# root permission required for autobind package, allow your linux account using 80 port
+# root permission required for autobind package, allow your linuxß account using 80 port
 ```
 
 ## test usage:
